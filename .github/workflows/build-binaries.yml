@@ -1,0 +1,42 @@
+name: Build naudiodon binaries
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            out: naudiodon-win32-x64.node
+          - os: ubuntu-latest
+            out: naudiodon-linux-x64.node
+          - os: macos-latest
+            out: naudiodon-darwin-x64.node
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build
+        run: |
+          npm install --ignore-scripts=false --build-from-source
+
+      - name: Verify output
+        run: |
+          ls -l build/Release || dir build\Release
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.out }}
+          path: build/Release/naudiodon.node
