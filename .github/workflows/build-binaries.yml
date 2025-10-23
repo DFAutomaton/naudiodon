@@ -6,14 +6,9 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            out: naudiodon-win32-x64.node
+  build-win64:
+    name: Build on Windows (x64)
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -27,12 +22,18 @@ jobs:
         run: |
           npm install --ignore-scripts=false --build-from-source
 
-      - name: Verify output
+      - name: Verify build output
         run: |
-          ls -l build/Release || dir build\Release
+          dir build\Release
 
-      - name: Upload binary
+      - name: Rename and package binary
+        run: |
+          mkdir packaged
+          copy build\Release\naudiodon.node packaged\naudiodon-win32-x64.node
+          powershell Compress-Archive -Path packaged\* -DestinationPath naudiodon-win32-x64.zip
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.out }}
-          path: build/Release/naudiodon.node
+          name: naudiodon-win32-x64
+          path: naudiodon-win32-x64.zip
