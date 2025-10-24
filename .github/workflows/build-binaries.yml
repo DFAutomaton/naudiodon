@@ -30,7 +30,8 @@ jobs:
         run: |
           mkdir packaged
           copy build\Release\naudiodon.node packaged\naudiodon-win32-x64.node
-          copy build\Release\portaudio_x64.dll packaged\portaudio_x64.dll
+          copy build\Release\portaudio_x64.dll packaged\
+          copy index.d.ts packaged\
           powershell Compress-Archive -Path packaged\* -DestinationPath naudiodon-win32-x64.zip
 
       - name: Upload artifact
