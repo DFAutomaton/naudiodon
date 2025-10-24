@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js 18
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
 
       - name: Install dependencies and build
         run: |
@@ -30,6 +30,7 @@ jobs:
         run: |
           mkdir packaged
           copy build\Release\naudiodon.node packaged\naudiodon-win32-x64.node
+          copy build\Release\portaudio_x64.dll packaged\portaudio_x64.dll
           powershell Compress-Archive -Path packaged\* -DestinationPath naudiodon-win32-x64.zip
 
       - name: Upload artifact
